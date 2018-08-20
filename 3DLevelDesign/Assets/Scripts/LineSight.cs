@@ -34,8 +34,10 @@ public class LineSight : MonoBehaviour
 	void Awake()
 	{
 		ThisTransform = GetComponent<Transform>();
+        //This is like the NPC's proximity
 		ThisCollider = GetComponent<SphereCollider>();
 		LastKnowSighting = ThisTransform.position;
+        //Get a reference to the player object's transform:
 		Target = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
 	}
 	//------------------------------------------
@@ -58,10 +60,13 @@ public class LineSight : MonoBehaviour
 	bool ClearLineofSight()
 	{
 		RaycastHit Info;
-	
+
+        //If there is a ray between the NPC's eyes and his target
+        //Also returns into Info
 		if(Physics.Raycast(EyePoint.position, (Target.position - EyePoint.position).normalized, out Info, ThisCollider.radius))
 		{
 			//If player, then can see player
+            //Access the target's Transform to compare the tag?
 			if(Info.transform.CompareTag("Player"))
 				return true;
 		}
@@ -71,6 +76,7 @@ public class LineSight : MonoBehaviour
 	//------------------------------------------
 	void UpdateSight()
 	{
+        //The main difference between STRICT and LOOSE sensitivities...
 		switch(Sensitity)
 		{
 			case SightSensitivity.STRICT:
@@ -83,6 +89,7 @@ public class LineSight : MonoBehaviour
 		}
 	}
 	//------------------------------------------
+    //
 	void OnTriggerStay(Collider Other)
 	{
 		UpdateSight();

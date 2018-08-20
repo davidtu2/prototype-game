@@ -38,7 +38,8 @@ public class AI_Enemy : MonoBehaviour
 	[SerializeField]
 	private ENEMY_STATE currentstate = ENEMY_STATE.PATROL;
 
-	//Reference to line of sight component
+    //Reference to line of sight component.
+    //LineSight is also initialized, so it's not part of Unity
 	private LineSight ThisLineSight = null;
 
 	//Reference to nav mesh agent
@@ -60,6 +61,7 @@ public class AI_Enemy : MonoBehaviour
 	{
 		ThisLineSight = GetComponent<LineSight>();
 		ThisAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        //Access the player object's attributes, such as it's health and transform (position):
 		PlayerHealth = GameObject.FindGameObjectWithTag("Player").GetComponent<Health>();
 		PlayerTransform = PlayerHealth.GetComponent<Transform>();
 	}
@@ -71,8 +73,9 @@ public class AI_Enemy : MonoBehaviour
 		PatrolDestination = Destinations[Random.Range(0, Destinations.Length)].GetComponent<Transform>();
 
 		//Configure starting state
-		CurrentState = ENEMY_STATE.PATROL;
-	}
+		CurrentState = ENEMY_STATE.PATROL;//Immediately jump to "public ENEMY_STATE CurrentState"
+        //Note that there is a "currentState" variable and a "CurrentState" as well
+    }
 	//------------------------------------------
 	public IEnumerator AIPatrol()
 	{
@@ -87,9 +90,12 @@ public class AI_Enemy : MonoBehaviour
             ThisAgent.SetDestination(PatrolDestination.position);
 
             //Wait until path is computed
+            //Is a path in the process of being computed and not yet ready? (Read Only)
+            //Will this skip over once the path is computed within another iteration of the while loop?
             while (ThisAgent.pathPending)
                 yield return null;
 
+            //While the NPC is going towards the destination...
             //If we can see the target then start chasing
             if (ThisLineSight.CanSeeTarget)
             {
