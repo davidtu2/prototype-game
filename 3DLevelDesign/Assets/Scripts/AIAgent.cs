@@ -24,6 +24,9 @@ public class AIAgent : MonoBehaviour
 
     //Reference to sphere collider
     private SphereCollider ThisCollider = null;
+
+    //Reference to the animations
+    private Animator ThisAnimator = null;
     //-----------------------------------
     // Use this for initialization
     void Awake () 
@@ -36,6 +39,9 @@ public class AIAgent : MonoBehaviour
         //Added for testing:
         //This is like the NPC's proximity
         ThisCollider = GetComponent<SphereCollider>();
+
+        //Access the animations
+        ThisAnimator = GetComponent<Animator>();
     }
 	//-----------------------------------
 	void Start()
@@ -48,16 +54,24 @@ public class AIAgent : MonoBehaviour
 	{
 		//Get Random Point
 		Vector3 Point = RandomPointOnNavMesh();
-		float WaitTime = 2f;
+		float WaitTime = 10f;
 		float ElapsedTime = 0f;
 
 		//Loop while idling
 		while(CurrentState == AISTATE.IDLE)
 		{
             //Goes to the random point
-			ThisAgent.SetDestination (Point);
-
+            ThisAgent.SetDestination (Point);
 			ElapsedTime += Time.deltaTime;
+
+            //Utilize the blend tree to play the running animation
+            ThisAnimator.SetFloat("Forward", 1.0f, 0.1f, Time.deltaTime);
+
+            if (ThisAgent.remainingDistance <= 0)
+            {
+                //Utilize the blend tree to strictly play the idle animation
+                ThisAnimator.SetFloat("Forward", 0.0f);
+            }
 
             //After waiting in one spot for a while, go to the next random point
 			if(ElapsedTime >= WaitTime)
@@ -81,6 +95,9 @@ public class AIAgent : MonoBehaviour
 	{
 		while(CurrentState == AISTATE.CHASE)
 		{
+            //Utilize the blend tree to play the running animation
+            ThisAnimator.SetFloat("Forward", 1.0f, 0.1f, Time.deltaTime);
+
 			ThisAgent.SetDestination (PlayerObject.position);
 
 			if(!CanSeePlayer)

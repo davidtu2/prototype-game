@@ -56,6 +56,9 @@ public class AI_Enemy : MonoBehaviour
 
 	//Damage amount per second
 	public float MaxDamage = 10f;
+
+    //Reference to the animations
+    private Animator ThisAnimator = null;
 	//------------------------------------------
 	void Awake()
 	{
@@ -64,6 +67,9 @@ public class AI_Enemy : MonoBehaviour
         //Access the player object's attributes, such as it's health and transform (position):
 		PlayerHealth = GameObject.FindGameObjectWithTag("Player").GetComponent<Health>();
 		PlayerTransform = PlayerHealth.GetComponent<Transform>();
+
+        //Access the animations
+        ThisAnimator = GetComponent<Animator>();
 	}
 	//------------------------------------------
 	void Start()
@@ -75,6 +81,9 @@ public class AI_Enemy : MonoBehaviour
 		//Configure starting state
 		CurrentState = ENEMY_STATE.PATROL;//Immediately jump to "public ENEMY_STATE CurrentState"
         //Note that there is a "currentState" variable and a "CurrentState" as well
+
+        //Utilize the blend tree to strictly play the running animation
+        ThisAnimator.SetFloat("Forward", 1.0f);
     }
 	//------------------------------------------
 	public IEnumerator AIPatrol()
